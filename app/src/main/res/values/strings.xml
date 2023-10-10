@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">ScaleShutdown</string>
+    <string name="cancel">Cancel</string>
+    <string name="time_is_up">Time is up!</string>
+    <string name="content_title">E-Trak automatic power off service</string>
+    <string name="monitoring_accessory_power">Monitoring accessory power</string>
+    <string name="shutdown_sequence_started">Shutdown sequence started</string>
+    <string name="start">Start</string>
+</resources>
