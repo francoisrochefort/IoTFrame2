@@ -28,35 +28,14 @@ class ShutdownService : LifecycleService() {
 
     }
 
-    enum class Action { Start, Stop }
+    enum class Action {
+        Start,
+        CancelShutdownSequence,
+        Stop
+    }
 
     private val timer = Timer(SHUTDOWN_DURATION)
     private lateinit var gpio: Gpio
-
-    // Monitor the accessory power gpio
-    private val callback = object : Gpio.GpioCallback {
-        override fun onValueChanged(value: Gpio.State) {
-            if (value == Gpio.State.Low) {
-                if (timer.state.value == Timer.State.Stopped) timer.start()
-            }
-            else if(value == Gpio.State.High) {
-                if (timer.state.value == Timer.State.Started) timer.stop()
-            }
-        }
-    }
-
-    // Stop the countdown if the user has canceled the shutdown sequence
-    private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == CANCEL_SHUTDOWN_SEQUENCE)
-                timer.stop()
-        }
-    }
-
-    override fun onBind(intent: Intent): IBinder? {
-        super.onBind(intent)
-        return null
-    }
 
     private val contentTitle: String
         get() = getString(R.string.content_title)
@@ -68,31 +47,54 @@ class ShutdownService : LifecycleService() {
 
     private fun onStart() {
 
+        // Init. the accessory power gpio
         gpio = Gpio(number = "24")
         gpio.mode = Gpio.Mode.Input
-        gpio.registerCallback(callback)
+        gpio.registerCallback(
+            object : Gpio.GpioCallback {
+                override fun onValueChanged(value: Gpio.State) {
 
+                    // If the power is off then start the timer
+                    if (value == Gpio.State.Low)
+                        timer.start()
+
+                    // If the power goes back on then stop the timer
+                    else if(value == Gpio.State.High)
+                        timer.stop()
+                }
+            }
+        )
+
+        // Collect the state of the timer
         lifecycleScope.launch {
             timer.state.collect { state ->
                 when (state) {
+
+                    // If the time is up then shutdown the system
                     Timer.State.TimeUp -> {
                         val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
                         powerManager.reboot(null)
                     }
+
+                    // If the timer has started then broadcast SHUTDOWN_SEQUENCE_STARTED
                     Timer.State.Started -> sendBroadcast(Intent(SHUTDOWN_SEQUENCE_STARTED))
+
+                    // If the timer has stopped then broadcast SHUTDOWN_SEQUENCE_CANCELED
                     Timer.State.Stopped -> sendBroadcast(Intent(SHUTDOWN_SEQUENCE_CANCELED))
                 }
             }
         }
 
+        // Collect the countdown of the timer
         lifecycleScope.launch {
             timer.countdown.collect { countdown ->
+
+                // If the countdown has began then broadcast the countdown
                 sendBroadcast(Intent(SHUTDOWN_SEQUENCE_COUNTDOWN).putExtra(EXTRA_COUNTDOWN, countdown))
             }
         }
 
-        registerReceiver(receiver, IntentFilter(CANCEL_SHUTDOWN_SEQUENCE))
-
+        // Init. the service
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.power)
             .setContentTitle(contentTitle)
@@ -101,24 +103,31 @@ class ShutdownService : LifecycleService() {
         startForeground(1, notification)
     }
 
-    private fun onStop() {
+    private fun cancelShutdownSequence() {
 
+        // Stop the timer if the user has clicked the cancel button
+        timer.stop()
+    }
+
+    private fun onStop() {
+        timer.stop()
+        gpio.unregisterCallback()
+    }
+
+    override fun onBind(intent: Intent): IBinder? {
+        super.onBind(intent)
+        return null
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
+        // Call the handler according to the action of the intent
         when (intent?.action) {
             Action.Start.name -> onStart()
+            Action.CancelShutdownSequence.name -> cancelShutdownSequence()
             Action.Stop.name -> onStop()
         }
 
         return super.onStartCommand(intent, flags, startId)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        timer.stop()
-        gpio.unregisterCallback()
-        unregisterReceiver(receiver)
     }
 }

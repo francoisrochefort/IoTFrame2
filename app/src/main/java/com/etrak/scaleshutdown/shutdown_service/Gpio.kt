@@ -15,6 +15,7 @@ class Gpio(private val number: String) {
 
     private val timer = Timer()
     private var callback: GpioCallback? = null
+    private lateinit var _value: State
 
     private fun runAsRoot(cmd: String) {
         val process = Runtime.getRuntime().exec("su")
@@ -49,7 +50,19 @@ class Gpio(private val number: String) {
         timer.scheduleAtFixedRate(
             object : TimerTask() {
                 override fun run() {
-                    callback.onValueChanged(value)
+
+                    // Read the current state of the gpio
+                    val state = value
+
+                    // If the lateinit variable has not been initialized then do it
+                    if (!::_value.isInitialized)
+                        _value = state
+
+                    // Notifier the observer that the state has changed
+                    if (_value != state) {
+                        callback.onValueChanged(state)
+                        _value = state
+                    }
                 }
             }, 0, 250
         )

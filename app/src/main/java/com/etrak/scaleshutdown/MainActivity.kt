@@ -70,7 +70,7 @@ class MainActivity : ComponentActivity() {
                         Button(
                             onClick = {
                                 Intent(applicationContext, ShutdownService::class.java).also {
-                                    it.action = ShutdownService.Action.Start.toString()
+                                    it.action = ShutdownService.Action.Start.name
                                     startService(it)
                                 }
                             }
