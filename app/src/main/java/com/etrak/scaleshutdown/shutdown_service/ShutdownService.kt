@@ -107,7 +107,6 @@ class ShutdownService : LifecycleService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-
         when (intent?.action) {
             Action.Start.name -> onStart()
             Action.Stop.name -> onStop()
