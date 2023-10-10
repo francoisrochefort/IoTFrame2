@@ -1,12 +1,9 @@
 package com.etrak.scaleshutdown.shutdown_service
 
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.IBinder
 import android.os.PowerManager
-import androidx.compose.ui.res.stringResource
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.collect
@@ -103,7 +100,7 @@ class ShutdownService : LifecycleService() {
         startForeground(1, notification)
     }
 
-    private fun cancelShutdownSequence() {
+    private fun onCancelShutdownSequence() {
 
         // Stop the timer if the user has clicked the cancel button
         timer.stop()
@@ -124,7 +121,7 @@ class ShutdownService : LifecycleService() {
         // Call the handler according to the action of the intent
         when (intent?.action) {
             Action.Start.name -> onStart()
-            Action.CancelShutdownSequence.name -> cancelShutdownSequence()
+            Action.CancelShutdownSequence.name -> onCancelShutdownSequence()
             Action.Stop.name -> onStop()
         }
 
