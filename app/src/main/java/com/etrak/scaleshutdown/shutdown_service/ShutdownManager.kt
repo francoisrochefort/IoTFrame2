@@ -66,9 +66,9 @@ class ShutdownManager(private val context: Context) {
     }
 
     fun cancelShutdownSequence() {
-        Intent(context, ShutdownService::class.java).also {
-            it.action = ShutdownService.Action.CancelShutdownSequence.name
-            context.startService(it)
+        Intent(context, ShutdownService::class.java).apply {
+            action = ShutdownService.Action.CancelShutdownSequence.name
+            context.startService(this)
         }
     }
 }

@@ -116,13 +116,11 @@ class ShutdownService : LifecycleService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-        // Call the handler according to the action of the intent
         when (intent?.action) {
             Action.Start.name -> onStart(intent.getIntExtra(EXTRA_DURATION, DEFAULT_DURATION))
             Action.CancelShutdownSequence.name -> onCancelShutdownSequence()
             Action.Stop.name -> onStop()
         }
-
         return super.onStartCommand(intent, flags, startId)
     }
 }
