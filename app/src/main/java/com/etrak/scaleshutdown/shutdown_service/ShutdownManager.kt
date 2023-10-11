@@ -11,7 +11,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 
-class ShutdownServiceFacade(private val context: Context) {
+class ShutdownManager(private val context: Context) {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val showCountdownSequence by lazy {

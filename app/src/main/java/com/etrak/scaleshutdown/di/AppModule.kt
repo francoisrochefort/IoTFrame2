@@ -1,7 +1,7 @@
 package com.etrak.scaleshutdown.di
 
-import com.etrak.scaleshutdown.shutdown_service.ShutdownServiceFacade
+import com.etrak.scaleshutdown.shutdown_service.ShutdownManager
 
 interface AppModule {
-    val shutdownService: ShutdownServiceFacade
+    val shutdownService: ShutdownManager
 }
