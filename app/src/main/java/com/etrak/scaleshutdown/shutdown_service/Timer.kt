@@ -21,13 +21,11 @@ class Timer(private val duration: Int) {
                     .onCompletion { cause ->
                         if (cause == null) _state.value = State.TimeUp
                     }
-                else -> emptyFlow()
+                else -> flowOf(duration)
             }
         }
     }
 
-    fun start() { _state.value = State.Started
-    }
-    fun stop() { _state.value = State.Stopped
-    }
+    fun start() { _state.value = State.Started }
+    fun stop() { _state.value = State.Stopped }
 }

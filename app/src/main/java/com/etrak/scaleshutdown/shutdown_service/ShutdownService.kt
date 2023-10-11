@@ -1,9 +1,7 @@
 package com.etrak.scaleshutdown.shutdown_service
 
-import android.content.Context
 import android.content.Intent
 import android.os.IBinder
-import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.collect
@@ -14,15 +12,14 @@ import kotlinx.coroutines.launch
 class ShutdownService : LifecycleService() {
 
     companion object {
-
         const val SHUTDOWN_SEQUENCE_STARTED = "com.example.SHUTDOWN_SEQUENCE_STARTED"
         const val SHUTDOWN_SEQUENCE_COUNTDOWN = "com.example.SHUTDOWN_SEQUENCE_COUNTDOWN"
         const val SHUTDOWN_SEQUENCE_CANCELED = "com.example.SHUTDOWN_SEQUENCE_CANCELED"
-        const val CANCEL_SHUTDOWN_SEQUENCE = "com.example.CANCEL_SHUTDOWN_SEQUENCE"
+        const val EXTRA_DURATION = "com.example.EXTRA_DURATION"
         const val EXTRA_COUNTDOWN = "com.example.EXTRA_COUNTDOWN"
-        const val SHUTDOWN_DURATION = 10
-        const val CHANNEL_ID = "running_channel"
 
+        const val DEFAULT_DURATION = 10
+        const val CHANNEL_ID = "running_channel"
     }
 
     enum class Action {
@@ -31,7 +28,7 @@ class ShutdownService : LifecycleService() {
         Stop
     }
 
-    private val timer = Timer(SHUTDOWN_DURATION)
+    private lateinit var timer:Timer
     private lateinit var gpio: Gpio
 
     private val contentTitle: String
@@ -42,7 +39,10 @@ class ShutdownService : LifecycleService() {
         else
             getString(R.string.shutdown_sequence_started)
 
-    private fun onStart() {
+    private fun onStart(duration: Int) {
+
+        // Init. the timer
+        timer = Timer(duration)
 
         // Init. the accessory power gpio
         gpio = Gpio(number = "24")
@@ -52,12 +52,10 @@ class ShutdownService : LifecycleService() {
                 override fun onValueChanged(value: Gpio.State) {
 
                     // If the power is off then start the timer
-                    if (value == Gpio.State.Low)
-                        timer.start()
+                    if (value == Gpio.State.Low) timer.start()
 
                     // If the power goes back on then stop the timer
-                    else if(value == Gpio.State.High)
-                        timer.stop()
+                    else if(value == Gpio.State.High) timer.stop()
                 }
             }
         )
@@ -69,8 +67,8 @@ class ShutdownService : LifecycleService() {
 
                     // If the time is up then shutdown the system
                     Timer.State.TimeUp -> {
-                        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
-                        powerManager.reboot(null)
+                        val runtimeObject = Runtime.getRuntime().exec(arrayOf("su", "-c","svc power shutdown"))
+                        runtimeObject.waitFor()
                     }
 
                     // If the timer has started then broadcast SHUTDOWN_SEQUENCE_STARTED
@@ -120,7 +118,7 @@ class ShutdownService : LifecycleService() {
 
         // Call the handler according to the action of the intent
         when (intent?.action) {
-            Action.Start.name -> onStart()
+            Action.Start.name -> onStart(intent.getIntExtra(EXTRA_DURATION, DEFAULT_DURATION))
             Action.CancelShutdownSequence.name -> onCancelShutdownSequence()
             Action.Stop.name -> onStop()
         }

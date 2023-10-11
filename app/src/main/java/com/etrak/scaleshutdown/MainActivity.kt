@@ -1,7 +1,6 @@
 package com.etrak.scaleshutdown
 
 import android.Manifest
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -14,17 +13,14 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat
 import com.etrak.scaleshutdown.ScaleApp.Companion.appModule
-import com.etrak.scaleshutdown.shutdown_service.ShutdownServiceFacade
 import com.etrak.scaleshutdown.shutdown_service.ShutdownSequence
-import com.etrak.scaleshutdown.shutdown_service.ShutdownService
+import com.etrak.scaleshutdown.shutdown_service.ShutdownService.Companion.DEFAULT_DURATION
 import com.etrak.scaleshutdown.ui.theme.ScaleShutdownTheme
-import kotlinx.coroutines.flow.collect
 
 class MainActivity : ComponentActivity() {
 
@@ -48,18 +44,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    // Collect shutdown service events to show, update or hide the countdown dialog
-                    var shutdownSequenceStarted by rememberSaveable { mutableStateOf(false) }
-                    var countdown by rememberSaveable { mutableStateOf(10) }
-                    LaunchedEffect(key1 = true) {
-                        appModule.shutdownService.events.collect { event ->
-                            when (event) {
-                                is ShutdownServiceFacade.Event.OnShutdownStarted -> shutdownSequenceStarted = true
-                                is ShutdownServiceFacade.Event.OnCountdown -> countdown = event.countdown
-                                is ShutdownServiceFacade.Event.OnShutdownCanceled -> shutdownSequenceStarted = false
-                            }
-                        }
-                    }
+                    // Observe the shutdown service
+                    val service =  appModule.shutdownService
+                    val show by service.showCountdownSequence.collectAsState(initial = false)
+                    val countdown by service.countdown.collectAsState(initial = DEFAULT_DURATION)
 
                     // Show the main screen
                     Column(
@@ -68,20 +56,14 @@ class MainActivity : ComponentActivity() {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Button(
-                            onClick = {
-                                Intent(applicationContext, ShutdownService::class.java).also {
-                                    it.action = ShutdownService.Action.Start.name
-                                    startService(it)
-                                }
-                            }
+                            onClick = service::start
                         ) {
                             Text(text = stringResource(id = R.string.start))
                         }
                     }
 
                     // Show the countdown dialog
-                    if (shutdownSequenceStarted) {
-                        val service =  appModule.shutdownService
+                    if (show) {
                         ShutdownSequence(
                             onCancelClick = service::cancelShutdownSequence,
                             countdown = countdown
