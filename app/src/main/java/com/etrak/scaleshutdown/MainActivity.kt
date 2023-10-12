@@ -57,7 +57,6 @@ class MainActivity : ComponentActivity() {
                     ) {
                         Button(
                             onClick = {
-
                                 // Use setting repository to pass the selected duration
                                 service.start(DEFAULT_DURATION)
                             }
