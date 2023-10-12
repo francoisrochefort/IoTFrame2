@@ -1,7 +1,7 @@
 package com.etrak.scaleshutdown.di
 
 import android.content.Context
-import com.etrak.scaleshutdown.shutdown_service.ShutdownManager
+import com.ecotrak.shutdown_service.ShutdownManager
 
 class AppModuleImpl(context: Context) : AppModule {
 

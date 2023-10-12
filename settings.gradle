@@ -12,7 +12,8 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "ScaleShutdown"
+rootProject.name = "IoTFrame2"
 include ':app'
 
 
+include ':shutdown-service'

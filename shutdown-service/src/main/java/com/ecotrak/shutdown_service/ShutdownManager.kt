@@ -1,12 +1,12 @@
-package com.etrak.scaleshutdown.shutdown_service
+package com.ecotrak.shutdown_service
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import com.etrak.scaleshutdown.shutdown_service.ShutdownService.Companion.DEFAULT_DURATION
-import com.etrak.scaleshutdown.shutdown_service.ShutdownService.Companion.EXTRA_COUNTDOWN
-import com.etrak.scaleshutdown.shutdown_service.ShutdownService.Companion.EXTRA_DURATION
+import com.ecotrak.shutdown_service.ShutdownService.Companion.DEFAULT_DURATION
+import com.ecotrak.shutdown_service.ShutdownService.Companion.EXTRA_COUNTDOWN
+import com.ecotrak.shutdown_service.ShutdownService.Companion.EXTRA_DURATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow

@@ -1,4 +1,4 @@
-package com.etrak.scaleshutdown.shutdown_service
+package com.ecotrak.shutdown_service
 
 import java.io.DataOutputStream
 import java.io.File

@@ -1,4 +1,4 @@
-package com.etrak.scaleshutdown.shutdown_service
+package com.ecotrak.shutdown_service
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -10,7 +10,6 @@ import androidx.core.app.NotificationCompat
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.collect
 import androidx.lifecycle.LifecycleService
-import com.etrak.scaleshutdown.R
 import kotlinx.coroutines.launch
 
 class ShutdownService : LifecycleService() {
@@ -38,7 +37,7 @@ class ShutdownService : LifecycleService() {
     /**********************************************************************************************
      * Variables
      *********************************************************************************************/
-    private lateinit var timer:Timer
+    private lateinit var timer: Timer
     private lateinit var gpio: Gpio
 
     /**********************************************************************************************

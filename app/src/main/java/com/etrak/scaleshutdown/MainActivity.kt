@@ -19,7 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat
 import com.etrak.scaleshutdown.ScaleApp.Companion.appModule
 import com.etrak.scaleshutdown.shutdown_service.ShutdownSequence
-import com.etrak.scaleshutdown.shutdown_service.ShutdownService.Companion.DEFAULT_DURATION
+import com.ecotrak.shutdown_service.ShutdownService.Companion.DEFAULT_DURATION
 import com.etrak.scaleshutdown.ui.theme.ScaleShutdownTheme
 
 class MainActivity : ComponentActivity() {

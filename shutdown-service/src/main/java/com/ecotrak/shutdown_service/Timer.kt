@@ -1,4 +1,4 @@
-package com.etrak.scaleshutdown.shutdown_service
+package com.ecotrak.shutdown_service
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -26,6 +26,8 @@ class Timer(private val duration: Int) {
         }
     }
 
-    fun start() { _state.value = State.Started }
-    fun stop() { _state.value = State.Stopped }
+    fun start() { _state.value = State.Started
+    }
+    fun stop() { _state.value = State.Stopped
+    }
 }

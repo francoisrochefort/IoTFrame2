@@ -17,7 +17,7 @@
         android:theme="@style/Theme.ScaleShutdown"
         tools:targetApi="31">
 
-        <service android:name=".shutdown_service.ShutdownService"/>
+        <service android:name="com.ecotrak.shutdown_service.ShutdownService"/>
 
         <activity
             android:name=".MainActivity"
