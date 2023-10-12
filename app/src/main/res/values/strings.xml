@@ -4,6 +4,7 @@
     <string name="time_is_up">Time is up!</string>
     <string name="content_title">E-Trak automatic shutdown service</string>
     <string name="monitoring_accessory_power">Monitoring accessory power</string>
-    <string name="shutdown_sequence_started">Shutting down system in %d</string>
+    <string name="shutting_down_system">Shutting down system in %d</string>
     <string name="start">Start</string>
+    <string name="shutdown_sequence_started">Shutdown sequence started</string>
 </resources>

@@ -18,7 +18,6 @@ class ShutdownService : LifecycleService() {
     /**********************************************************************************************
      * Constants
      *********************************************************************************************/
-
     companion object {
         const val DEFAULT_DURATION = 10
         const val SHUTDOWN_SEQUENCE_STARTED = "com.example.SHUTDOWN_SEQUENCE_STARTED"
@@ -47,7 +46,7 @@ class ShutdownService : LifecycleService() {
      *********************************************************************************************/
     private fun getContentText(state: Timer.State, countdown: Int? = null) =
         if (state == Timer.State.Started && countdown != null)
-            String.format(getString(R.string.shutdown_sequence_started), countdown)
+            String.format(getString(R.string.shutting_down_system), countdown)
         else
             getString(R.string.monitoring_accessory_power)
     private fun getContentText() = getContentText(timer.state.value)
