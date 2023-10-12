@@ -12,13 +12,15 @@ import kotlinx.coroutines.launch
 class ShutdownService : LifecycleService() {
 
     companion object {
+
+        const val DEFAULT_DURATION = 10
+
         const val SHUTDOWN_SEQUENCE_STARTED = "com.example.SHUTDOWN_SEQUENCE_STARTED"
         const val SHUTDOWN_SEQUENCE_COUNTDOWN = "com.example.SHUTDOWN_SEQUENCE_COUNTDOWN"
         const val SHUTDOWN_SEQUENCE_CANCELED = "com.example.SHUTDOWN_SEQUENCE_CANCELED"
         const val EXTRA_DURATION = "com.example.EXTRA_DURATION"
         const val EXTRA_COUNTDOWN = "com.example.EXTRA_COUNTDOWN"
 
-        const val DEFAULT_DURATION = 10
         const val CHANNEL_ID = "running_channel"
     }
 
@@ -54,7 +56,7 @@ class ShutdownService : LifecycleService() {
                     // If the power is off then start the timer
                     if (value == Gpio.State.Low) timer.start()
 
-                    // If the power goes back on then stop the timer
+                    // If the power goes on then stop the timer
                     else if(value == Gpio.State.High) timer.stop()
                 }
             }
@@ -84,7 +86,7 @@ class ShutdownService : LifecycleService() {
         lifecycleScope.launch {
             timer.countdown.collect { countdown ->
 
-                // If the countdown has began then broadcast the countdown
+                // Broadcast the countdown
                 sendBroadcast(Intent(SHUTDOWN_SEQUENCE_COUNTDOWN).putExtra(EXTRA_COUNTDOWN, countdown))
             }
         }
