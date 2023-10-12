@@ -57,10 +57,10 @@ class ShutdownManager(private val context: Context) {
         }
     }
 
-    fun start() {
+    fun start(duration: Int) {
         Intent(context, ShutdownService::class.java).apply {
             action = ShutdownService.Action.Start.name
-            putExtra(EXTRA_DURATION, DEFAULT_DURATION)
+            putExtra(EXTRA_DURATION, duration)
             context.startService(this)
         }
     }

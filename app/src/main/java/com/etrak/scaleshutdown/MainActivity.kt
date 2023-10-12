@@ -56,7 +56,9 @@ class MainActivity : ComponentActivity() {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Button(
-                            onClick = service::start
+                            onClick = {
+                                service.start(DEFAULT_DURATION)
+                            }
                         ) {
                             Text(text = stringResource(id = R.string.start))
                         }
@@ -65,7 +67,9 @@ class MainActivity : ComponentActivity() {
                     // Show the countdown dialog
                     if (show) {
                         ShutdownSequence(
-                            onCancelClick = service::cancelShutdownSequence,
+                            onCancelClick = {
+                                service.cancelShutdownSequence()
+                            },
                             countdown = countdown
                         )
                     }
